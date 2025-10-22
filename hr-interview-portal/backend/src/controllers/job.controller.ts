@@ -244,11 +244,17 @@ export const generateJobDescription = async (
       title,
       requirementsLength: requirements?.length || 0,
       hasApiKey: !!process.env.GEMINI_API_KEY,
+      apiKeyPrefix: process.env.GEMINI_API_KEY?.substring(0, 10) || 'none',
+      userId: req.user?.uid,
     });
     
     const generatedDescription = await geminiService.generateJobDescription({
       title,
       requirements,
+    });
+    
+    logger.info('Job description generated successfully', {
+      descriptionLength: generatedDescription.length,
     });
     
     res.status(200).json({
@@ -264,11 +270,19 @@ export const generateJobDescription = async (
       hasApiKey: !!process.env.GEMINI_API_KEY,
     });
     
-    // Return helpful error message to frontend
-    const errorMessage = error.message.includes('API key') 
-      ? 'AI service not configured. Please contact administrator.' 
-      : 'Failed to generate job description. Please try again.';
+    // Return user-friendly error message
+    let errorMessage = 'Failed to generate job description. Please try again.';
     
-    throw new ApiError(500, errorMessage);
+    if (error.message.includes('API key') || error.message.includes('not configured')) {
+      errorMessage = 'AI service is not configured. Please contact the administrator.';
+    } else if (error.message.includes('quota') || error.message.includes('limit')) {
+      errorMessage = 'API rate limit reached. Please try again in a few minutes.';
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: errorMessage,
+      details: error.message,
+    });
   }
 };

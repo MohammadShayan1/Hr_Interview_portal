@@ -82,10 +82,16 @@ export default function JobsPage() {
     
     try {
       setGeneratingAI(true);
+      toast.loading('Generating job description with AI... (This may take 10-15 seconds if the server was sleeping)', {
+        id: 'ai-generating',
+      });
+      
       const generatedDescription = await jobService.generateJobDescription({
         title: aiTitle,
         requirements: aiRequirements,
       });
+      
+      toast.dismiss('ai-generating');
       
       // Close AI modal and open create modal with generated content
       setShowAIModal(false);
@@ -96,8 +102,15 @@ export default function JobsPage() {
       setAiRequirements('');
       
       toast.success('AI-generated job description ready!');
-    } catch (error) {
-      toast.error('Failed to generate job description');
+    } catch (error: any) {
+      toast.dismiss('ai-generating');
+      
+      // Show user-friendly error message
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.details || 
+                          'Failed to generate job description. Please try again.';
+      
+      toast.error(errorMessage);
       console.error('Error generating description:', error);
     } finally {
       setGeneratingAI(false);

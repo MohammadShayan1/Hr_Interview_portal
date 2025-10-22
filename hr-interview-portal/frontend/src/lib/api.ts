@@ -9,6 +9,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000, // 30 seconds - Railway may need time to wake up from sleep
 });
 
 // Request interceptor to add auth token
