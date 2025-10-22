@@ -19,13 +19,17 @@ const startServer = async (): Promise<void> => {
     
     // Start server
     const server = app.listen(config.port, '0.0.0.0', () => {
+      const isProduction = config.nodeEnv === 'production';
+      const host = isProduction 
+        ? process.env.RAILWAY_PUBLIC_DOMAIN || 'your-app.railway.app'
+        : 'localhost';
+      
       logger.info(`
 🚀 Server is running!
 📡 Environment: ${config.nodeEnv}
-🔗 Local: http://localhost:${config.port}
-🔗 Network: http://192.168.0.141:${config.port}
-📊 API: http://192.168.0.141:${config.port}/api
-✅ Health Check: http://192.168.0.141:${config.port}/api/health
+🔗 URL: ${isProduction ? 'https' : 'http'}://${host}${isProduction ? '' : ':' + config.port}
+📊 API: ${isProduction ? 'https' : 'http'}://${host}${isProduction ? '' : ':' + config.port}/api
+✅ Health Check: ${isProduction ? 'https' : 'http'}://${host}${isProduction ? '' : ':' + config.port}/api/health
       `);
     });
     
