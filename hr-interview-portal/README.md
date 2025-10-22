@@ -2,22 +2,30 @@
 
 > **AI-Powered Recruitment Automation Platform** - A production-ready, scalable SaaS application for automating the entire interview lifecycle.
 
-## 📋 Table of Contents
+## � Quick Start
+
+**Want to run this project?** → See **[SETUP.md](./SETUP.md)** for complete instructions.
+
+**5-Minute Setup:**
+```powershell
+npm install
+# Configure .env files (see SETUP.md)
+npm run dev
+```
+
+**Frontend:** http://localhost:3000  
+**Backend:** http://localhost:5000
+
+---
+
+## �📋 Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Running Locally](#running-locally)
-- [Deployment](#deployment)
-- [n8n Workflow Integration](#n8n-workflow-integration)
-- [API Documentation](#api-documentation)
-- [Security](#security)
-- [Contributing](#contributing)
-- [License](#license)
+- [Quick Links](#quick-links)
+- [Documentation](#documentation)
 
 ## 🌟 Overview
 
@@ -79,7 +87,7 @@ The HR Virtual Interview Portal is a comprehensive multi-tenant SaaS application
 
 ## 📁 Project Structure
 
-\`\`\`
+```
 hr-interview-portal/
 ├── backend/                    # Express.js API Server
 │   ├── src/
