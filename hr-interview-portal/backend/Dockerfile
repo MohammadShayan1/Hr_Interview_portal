@@ -7,20 +7,20 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (production only)
-RUN npm ci --only=production
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
 
 # Copy TypeScript config and source code
 COPY tsconfig.json ./
+COPY tsconfig.build.json ./
 COPY src ./src
 
-# Install TypeScript and build dependencies temporarily
-RUN npm install -D typescript @types/node && \
-    npm run build && \
-    npm uninstall typescript @types/node
+# Build the TypeScript code
+RUN npm run build
 
-# Remove source files (we only need dist)
-RUN rm -rf src tsconfig.json
+# Remove development dependencies and source files
+RUN npm prune --omit=dev && \
+    rm -rf src tsconfig.json tsconfig.build.json
 
 # Expose port (configurable via environment variable)
 EXPOSE 5000
