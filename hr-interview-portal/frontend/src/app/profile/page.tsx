@@ -38,8 +38,9 @@ function ProfileContent() {
 
   const fetchProfile = async () => {
     try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       const token = await (window as any).auth.currentUser?.getIdToken();
-      const response = await fetch('http://192.168.0.141:5000/api/users/profile', {
+      const response = await fetch(`${apiUrl}/users/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -79,8 +80,9 @@ function ProfileContent() {
   const handleSaveProfile = async () => {
     try {
       setIsSaving(true);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       const token = await (window as any).auth.currentUser?.getIdToken();
-      const response = await fetch('http://192.168.0.141:5000/api/users/profile', {
+      const response = await fetch(`${apiUrl}/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -111,8 +113,9 @@ function ProfileContent() {
     }
 
     try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       const token = await (window as any).auth.currentUser?.getIdToken();
-      const response = await fetch('http://192.168.0.141:5000/api/users/account', {
+      const response = await fetch(`${apiUrl}/users/account`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

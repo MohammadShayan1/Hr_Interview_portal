@@ -55,15 +55,24 @@ export default function JobsPage() {
     e.preventDefault();
     
     try {
-      await jobService.createJob({ title, description });
-      toast.success('Job created successfully!');
+      if (selectedJob) {
+        // Update existing job
+        await jobService.updateJob(selectedJob.id, { title, description });
+        toast.success('Job updated successfully!');
+      } else {
+        // Create new job
+        await jobService.createJob({ title, description });
+        toast.success('Job created successfully!');
+      }
+      
       setShowCreateModal(false);
+      setSelectedJob(null);
       setTitle('');
       setDescription('');
       fetchJobs();
     } catch (error) {
-      toast.error('Failed to create job');
-      console.error('Error creating job:', error);
+      toast.error(selectedJob ? 'Failed to update job' : 'Failed to create job');
+      console.error('Error saving job:', error);
     }
   };
 
