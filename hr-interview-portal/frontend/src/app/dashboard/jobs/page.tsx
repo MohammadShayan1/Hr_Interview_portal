@@ -124,17 +124,17 @@ export default function JobsPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="mb-6 flex gap-3">
+          <div className="mb-6 flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
             >
               <Plus className="w-5 h-5" />
               Create New Job
             </button>
             <button
               onClick={() => setShowAIModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
               <Sparkles className="w-5 h-5" />
               Generate with AI
@@ -163,12 +163,12 @@ export default function JobsPage() {
           ) : (
             <div className="grid gap-4">
               {jobs.map((job) => (
-                <div key={job.id} className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
-                      <p className="text-gray-600 mb-4 line-clamp-2">{job.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                <div key={job.id} className="bg-white rounded-lg shadow p-4 sm:p-6 hover:shadow-md transition-shadow">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                    <div className="flex-1 w-full">
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
+                      <p className="text-gray-600 mb-4 line-clamp-2 text-sm sm:text-base">{job.description}</p>
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500">
                         <span className="flex items-center gap-1">
                           <Briefcase className="w-4 h-4" />
                           {job.status}
@@ -179,13 +179,13 @@ export default function JobsPage() {
                       </div>
                     </div>
                     
-                    <div className="flex gap-2 ml-4">
+                    <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                       <button
                         onClick={() => viewCandidates(job.id)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="flex-1 sm:flex-none p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="View Candidates"
                       >
-                        <Users className="w-5 h-5" />
+                        <Users className="w-5 h-5 mx-auto" />
                       </button>
                       <button
                         onClick={() => {
@@ -194,34 +194,36 @@ export default function JobsPage() {
                           setDescription(job.description);
                           setShowCreateModal(true);
                         }}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="flex-1 sm:flex-none p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                         title="Edit"
                       >
-                        <Pencil className="w-5 h-5" />
+                        <Pencil className="w-5 h-5 mx-auto" />
                       </button>
                       <button
                         onClick={() => handleDeleteJob(job.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="flex-1 sm:flex-none p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Delete"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-5 h-5 mx-auto" />
                       </button>
                     </div>
                   </div>
                   
                   {/* Application Link */}
                   <div className="mt-4 pt-4 border-t">
-                    <p className="text-sm text-gray-600 mb-2">Application Link:</p>
-                    <div className="flex items-center gap-2">
-                      <code className="flex-1 px-3 py-2 bg-gray-50 rounded text-sm text-gray-700 overflow-x-auto">
-                        {window.location.origin}/apply/{job.id}
+                    <p className="text-xs sm:text-sm text-gray-600 mb-2">Application Link:</p>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                      <code className="flex-1 px-3 py-2 bg-gray-50 rounded text-xs sm:text-sm text-gray-700 overflow-x-auto break-all">
+                        {typeof window !== 'undefined' && `${window.location.origin}/apply/${job.id}`}
                       </code>
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(`${window.location.origin}/apply/${job.id}`);
-                          toast.success('Link copied to clipboard!');
+                          if (typeof window !== 'undefined') {
+                            navigator.clipboard.writeText(`${window.location.origin}/apply/${job.id}`);
+                            toast.success('Link copied to clipboard!');
+                          }
                         }}
-                        className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium transition-colors"
+                        className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
                       >
                         Copy
                       </button>
@@ -234,10 +236,10 @@ export default function JobsPage() {
 
           {/* Create/Edit Job Modal */}
           {showCreateModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full my-8">
+                <div className="p-4 sm:p-6">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                     {selectedJob ? 'Edit Job' : 'Create New Job'}
                   </h2>
                   
@@ -251,7 +253,7 @@ export default function JobsPage() {
                           type="text"
                           value={title}
                           onChange={(e) => setTitle(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
                           placeholder="e.g., Senior Software Engineer"
                           required
                         />
@@ -264,7 +266,7 @@ export default function JobsPage() {
                         <textarea
                           value={description}
                           onChange={(e) => setDescription(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
                           rows={10}
                           placeholder="Enter job description, requirements, responsibilities..."
                           required
@@ -272,10 +274,10 @@ export default function JobsPage() {
                       </div>
                     </div>
                     
-                    <div className="flex gap-3 mt-6">
+                    <div className="flex flex-col sm:flex-row gap-3 mt-6">
                       <button
                         type="submit"
-                        className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                        className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm sm:text-base"
                       >
                         {selectedJob ? 'Update Job' : 'Create Job'}
                       </button>
@@ -287,7 +289,7 @@ export default function JobsPage() {
                           setTitle('');
                           setDescription('');
                         }}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm sm:text-base"
                       >
                         Cancel
                       </button>
@@ -300,12 +302,12 @@ export default function JobsPage() {
 
           {/* AI Generation Modal */}
           {showAIModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-                <div className="p-6">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full my-8">
+                <div className="p-4 sm:p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="w-6 h-6 text-purple-600" />
-                    <h2 className="text-2xl font-bold text-gray-900">
+                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+                    <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
                       Generate Job Description with AI
                     </h2>
                   </div>
@@ -320,7 +322,7 @@ export default function JobsPage() {
                           type="text"
                           value={aiTitle}
                           onChange={(e) => setAiTitle(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base"
                           placeholder="e.g., Senior Frontend Developer"
                           required
                         />
@@ -333,7 +335,7 @@ export default function JobsPage() {
                         <textarea
                           value={aiRequirements}
                           onChange={(e) => setAiRequirements(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base"
                           rows={6}
                           placeholder="e.g., 5+ years React experience, TypeScript, Next.js, Team leadership..."
                           required
@@ -341,11 +343,11 @@ export default function JobsPage() {
                       </div>
                     </div>
                     
-                    <div className="flex gap-3 mt-6">
+                    <div className="flex flex-col sm:flex-row gap-3 mt-6">
                       <button
                         type="submit"
                         disabled={generatingAI}
-                        className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
                       >
                         {generatingAI ? (
                           <>
@@ -366,7 +368,7 @@ export default function JobsPage() {
                           setAiTitle('');
                           setAiRequirements('');
                         }}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm sm:text-base"
                       >
                         Cancel
                       </button>

@@ -133,13 +133,13 @@ function CandidatesContent() {
 
           {/* Job Filter */}
           <div className="mb-6 bg-white rounded-lg shadow p-4">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <Filter className="w-5 h-5 text-gray-500" />
               <label className="text-sm font-medium text-gray-700">Filter by Job:</label>
               <select
                 value={selectedJobId}
                 onChange={(e) => setSelectedJobId(e.target.value)}
-                className="flex-1 max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full sm:flex-1 sm:max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
               >
                 {jobs.map((job) => (
                   <option key={job.id} value={job.id}>
@@ -173,78 +173,82 @@ function CandidatesContent() {
           ) : (
             <div className="grid gap-4">
               {candidates.map((candidate) => (
-                <div key={candidate.id} className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <h3 className="text-xl font-semibold text-gray-900">{candidate.name}</h3>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(candidate.status)}`}>
+                <div key={candidate.id} className="bg-white rounded-lg shadow p-4 sm:p-6 hover:shadow-md transition-shadow">
+                  <div className="flex flex-col items-start">
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{candidate.name}</h3>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(candidate.status)} w-fit`}>
                           {candidate.status}
                         </span>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 mb-4">
                         <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4" />
-                          <a href={`mailto:${candidate.email}`} className="hover:text-primary-600">
+                          <Mail className="w-4 h-4 flex-shrink-0" />
+                          <a href={`mailto:${candidate.email}`} className="hover:text-primary-600 truncate">
                             {candidate.email}
                           </a>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4" />
+                          <Phone className="w-4 h-4 flex-shrink-0" />
                           <a href={`tel:${candidate.phone}`} className="hover:text-primary-600">
                             {candidate.phone}
                           </a>
                         </div>
                         <div className="flex items-center gap-2">
-                          <FileText className="w-4 h-4" />
+                          <FileText className="w-4 h-4 flex-shrink-0" />
                           <span>{candidate.experience} years experience</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
+                          <Calendar className="w-4 h-4 flex-shrink-0" />
                           <span>Applied: {new Date(candidate.appliedAt).toLocaleDateString()}</span>
                         </div>
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-3 mt-4">
+                      <div className="flex flex-wrap gap-2 sm:gap-3">
                         {candidate.resumeUrl && (
                           <a
                             href={`${process.env.NEXT_PUBLIC_API_URL}${candidate.resumeUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm"
                           >
                             <FileText className="w-4 h-4" />
-                            View Resume
+                            <span className="hidden sm:inline">View Resume</span>
+                            <span className="sm:hidden">Resume</span>
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         )}
                         <button
                           onClick={() => setEmailModal({ isOpen: true, candidate })}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm"
+                          className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs sm:text-sm"
                         >
                           <Mail className="w-4 h-4" />
-                          Send Email
+                          <span className="hidden sm:inline">Send Email</span>
+                          <span className="sm:hidden">Email</span>
                         </button>
                         {candidate.interviewLink && (
                           <a
                             href={candidate.interviewLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
+                            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs sm:text-sm"
                           >
                             <ExternalLink className="w-4 h-4" />
-                            Interview Link
+                            <span className="hidden sm:inline">Interview Link</span>
+                            <span className="sm:hidden">Interview</span>
                           </a>
                         )}
                         {candidate.evaluationReport && (
                           <button
                             onClick={() => setSelectedCandidate(candidate)}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm"
+                            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-xs sm:text-sm"
                           >
                             <FileText className="w-4 h-4" />
-                            View Report
+                            <span className="hidden sm:inline">View Report</span>
+                            <span className="sm:hidden">Report</span>
                           </button>
                         )}
                       </div>

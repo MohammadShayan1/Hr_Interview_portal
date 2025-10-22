@@ -5,19 +5,19 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white">
       {/* Navigation */}
-      <nav className="px-6 py-4 bg-white shadow-sm">
+      <nav className="px-4 sm:px-6 py-4 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-primary-600">HR Interview Portal</h1>
-          <div className="space-x-4">
+          <h1 className="text-lg sm:text-2xl font-bold text-primary-600">HR Interview Portal</h1>
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link
               href="/login"
-              className="text-gray-700 hover:text-primary-600 font-medium"
+              className="text-sm sm:text-base text-gray-700 hover:text-primary-600 font-medium"
             >
               Login
             </Link>
             <Link
               href="/signup"
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              className="px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm sm:text-base"
             >
               Get Started
             </Link>
@@ -26,58 +26,58 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-6 py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
             AI-Powered Interview Automation
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
             Streamline your recruitment process with automated interview scheduling,
             AI-generated job descriptions, and intelligent candidate evaluation.
           </p>
           <Link
             href="/signup"
-            className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-lg font-medium"
+            className="inline-flex items-center px-5 sm:px-6 py-2.5 sm:py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-base sm:text-lg font-medium"
           >
             Start Free Trial
-            <ArrowRight className="ml-2 w-5 h-5" />
+            <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
           </Link>
         </div>
 
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 mt-20">
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-12 sm:mt-20">
+          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
             <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
               <Briefcase className="w-6 h-6 text-primary-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
               AI Job Descriptions
             </h3>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Generate professional, compelling job descriptions in seconds using advanced AI technology.
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
             <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
               <Zap className="w-6 h-6 text-primary-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
               Automated Workflows
             </h3>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Automatically schedule interviews, send invitations, and manage the entire candidate pipeline.
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200 sm:col-span-2 lg:col-span-1">
             <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
               <Users className="w-6 h-6 text-primary-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
               Smart Evaluation
             </h3>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Get AI-powered interview reports with detailed candidate assessments and recommendations.
             </p>
           </div>
@@ -146,25 +146,25 @@ export default function HomePage() {
         </div>
 
         {/* How It Works */}
-        <div className="mt-32">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="mt-20 sm:mt-32">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
               How It Works
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
               Simple 4-step process to streamline your hiring
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 1
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 Create Job
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-sm text-gray-600 px-4">
                 Post a job or let AI generate the description for you
               </p>
             </div>
@@ -173,10 +173,10 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 2
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 Receive Applications
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-sm text-gray-600 px-4">
                 Candidates apply with resumes and qualifications
               </p>
             </div>
@@ -185,10 +185,10 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 3
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 Schedule Interviews
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-sm text-gray-600 px-4">
                 Send interview invites and candidates join online
               </p>
             </div>
@@ -197,10 +197,10 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 4
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 Get Reports
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-sm text-gray-600 px-4">
                 Receive AI-generated reports and make decisions
               </p>
             </div>
@@ -258,101 +258,101 @@ export default function HomePage() {
         </div>
 
         {/* Pricing Section */}
-        <div className="mt-32">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="mt-20 sm:mt-32">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
               Free to start, scales with your business
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
-              <p className="text-gray-600 mb-6">For individuals and small teams</p>
-              <div className="text-4xl font-bold text-primary-600 mb-6">
+          <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">For individuals and small teams</p>
+              <div className="text-3xl sm:text-4xl font-bold text-primary-600 mb-4 sm:mb-6">
                 Free
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
                   <span className="text-gray-700">Up to 5 jobs</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
                   <span className="text-gray-700">50 applications/month</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
                   <span className="text-gray-700">Basic reports</span>
                 </li>
               </ul>
               <Link
                 href="/signup"
-                className="w-full px-4 py-2 border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium"
+                className="block w-full px-4 py-2 border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium text-center text-sm sm:text-base"
               >
                 Get Started
               </Link>
             </div>
 
-            <div className="bg-primary-600 text-white p-8 rounded-xl shadow-lg border-2 border-primary-600 relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+            <div className="bg-primary-600 text-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-primary-600 relative">
+              <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-gray-900 px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-bold">
                 POPULAR
               </div>
-              <h3 className="text-2xl font-bold mb-2">Professional</h3>
-              <p className="text-primary-100 mb-6">For growing teams</p>
-              <div className="text-4xl font-bold mb-6">
-                $49<span className="text-lg text-primary-100">/mo</span>
+              <h3 className="text-xl sm:text-2xl font-bold mb-2">Professional</h3>
+              <p className="text-sm sm:text-base text-primary-100 mb-4 sm:mb-6">For growing teams</p>
+              <div className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">
+                $49<span className="text-base sm:text-lg text-primary-100">/mo</span>
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-yellow-400" />
+              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 flex-shrink-0" />
                   <span>Unlimited jobs</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-yellow-400" />
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 flex-shrink-0" />
                   <span>500 applications/month</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-yellow-400" />
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 flex-shrink-0" />
                   <span>AI descriptions</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-yellow-400" />
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 flex-shrink-0" />
                   <span>Advanced reports</span>
                 </li>
               </ul>
               <Link
                 href="/signup"
-                className="w-full px-4 py-2 bg-white text-primary-600 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                className="block w-full px-4 py-2 bg-white text-primary-600 rounded-lg hover:bg-gray-100 transition-colors font-medium text-center text-sm sm:text-base"
               >
                 Start Free Trial
               </Link>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
-              <p className="text-gray-600 mb-6">For large organizations</p>
-              <div className="text-4xl font-bold text-primary-600 mb-6">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">For large organizations</p>
+              <div className="text-3xl sm:text-4xl font-bold text-primary-600 mb-4 sm:mb-6">
                 Custom
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
                   <span className="text-gray-700">Everything in Pro</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
                   <span className="text-gray-700">Unlimited everything</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                <li className="flex items-center gap-2 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
                   <span className="text-gray-700">24/7 Support</span>
                 </li>
               </ul>
-              <button className="w-full px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 transition-colors font-medium">
+              <button className="w-full px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 transition-colors font-medium text-sm sm:text-base">
                 Contact Sales
               </button>
             </div>
