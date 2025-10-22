@@ -328,53 +328,69 @@ npm run dev
 
 ## 🌐 Deployment
 
-### Backend Deployment (Example: Google Cloud Run)
+### 🚀 Quick Deploy (Free Hosting)
 
-1. **Build the backend**:
-   \`\`\`powershell
-   cd backend
-   npm run build
-   \`\`\`
+**Frontend on Vercel + Backend on Railway** (Recommended for free hosting)
 
-2. **Create a `Dockerfile`** (backend/Dockerfile):
-   \`\`\`dockerfile
-   FROM node:18-alpine
-   WORKDIR /app
-   COPY package*.json ./
-   RUN npm ci --only=production
-   COPY dist ./dist
-   EXPOSE 5000
-   CMD ["node", "dist/server.js"]
-   \`\`\`
+👉 **See [RAILWAY_DEPLOY.md](./RAILWAY_DEPLOY.md) for 10-minute setup**
 
-3. **Deploy to Cloud Run**:
-   \`\`\`powershell
-   gcloud run deploy hr-interview-backend \
-     --source . \
-     --platform managed \
-     --region us-central1 \
-     --allow-unauthenticated
-   \`\`\`
+Or check [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for:
+- ✅ Railway (Recommended - $5/month free credit, no cold starts)
+- ✅ Render (Free 750 hours, sleeps after 15 min)
+- ✅ Fly.io (Free tier, globally distributed)
 
-### Frontend Deployment (Vercel - Recommended)
+### What You Get
 
-1. **Install Vercel CLI**:
-   \`\`\`powershell
-   npm i -g vercel
-   \`\`\`
+All deployment guides include:
+- ✅ Step-by-step instructions
+- ✅ Environment variable templates
+- ✅ Pre-configured Docker/config files
+- ✅ Testing checklist
+- ✅ Troubleshooting guide
 
-2. **Deploy**:
-   \`\`\`powershell
-   cd frontend
-   vercel --prod
-   \`\`\`
+### Deployment Files Included
 
-3. **Configure Environment Variables** in Vercel Dashboard
+```
+backend/
+  ├── Dockerfile           # Docker configuration
+  ├── .dockerignore        # Docker ignore rules
+  ├── railway.json         # Railway config
+  ├── render.yaml          # Render config
+  └── fly.toml            # Fly.io config
 
-### Alternative Deployment Options
+.env.example              # Environment variables template
+RAILWAY_DEPLOY.md         # Quick Railway setup
+DEPLOYMENT_GUIDE.md       # Complete deployment guide
+DEPLOY_QUICKREF.md        # Quick reference card
+```
 
-- **Backend**: AWS Lambda, DigitalOcean App Platform, Heroku, Railway
-- **Frontend**: Netlify, AWS Amplify, Firebase Hosting
+### Frontend Deployment (Vercel)
+
+Already done! Just update environment variables:
+
+1. Go to Vercel Dashboard → Your Project
+2. Settings → Environment Variables
+3. Update `NEXT_PUBLIC_API_URL` with your backend URL
+4. Redeploy
+
+### Backend Deployment Options
+
+| Platform | Free Tier | Setup Time | Best For |
+|----------|-----------|------------|----------|
+| **Railway** | $5/mo credit | 5 min | Recommended ⭐ |
+| **Render** | 750 hrs/mo | 10 min | Side projects |
+| **Fly.io** | 3 VMs free | 15 min | Production |
+
+### Deployment Checklist
+
+- [ ] Backend deployed (Railway/Render/Fly.io)
+- [ ] Frontend deployed (Vercel)
+- [ ] Environment variables configured
+- [ ] Firebase services enabled
+- [ ] Health check passing: `/api/health`
+- [ ] CORS configured for production URLs
+- [ ] Email service configured
+- [ ] Test complete application flow
 
 ## 🔄 n8n Workflow Integration
 

@@ -57,12 +57,25 @@ export const validateConfig = (): void => {
     'FIREBASE_PROJECT_ID',
     'FIREBASE_PRIVATE_KEY',
     'FIREBASE_CLIENT_EMAIL',
-    'OPENROUTER_API_KEY',
   ];
   
   const missing = required.filter((key) => !process.env[key]);
   
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+  
+  // Warn about optional but recommended variables
+  const recommended = [
+    'OPENROUTER_API_KEY',
+    'EMAIL_USER',
+    'EMAIL_PASSWORD',
+  ];
+  
+  const missingRecommended = recommended.filter((key) => !process.env[key]);
+  
+  if (missingRecommended.length > 0 && config.nodeEnv === 'production') {
+    console.warn(`⚠️  Warning: Missing recommended environment variables: ${missingRecommended.join(', ')}`);
+    console.warn('   Some features may not work without these variables.');
   }
 };
