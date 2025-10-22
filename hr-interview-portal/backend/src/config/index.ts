@@ -21,6 +21,11 @@ export const config = {
     apiUrl: process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions',
   },
   
+  // Google Gemini AI
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY || '',
+  },
+  
   // BeyondPresence
   beyondPresence: {
     apiKey: process.env.BEYONDPRESENCE_API_KEY || '',

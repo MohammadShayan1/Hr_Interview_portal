@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { getDb } from '../config/firebase';
-import openRouterService from '../services/openrouter.service';
+import geminiService from '../services/gemini.service';
 import logger from '../config/logger';
 import { ApiError } from '../middleware/error.middleware';
 
@@ -231,7 +231,7 @@ export const deleteJob = async (req: AuthRequest, res: Response): Promise<void> 
 };
 
 /**
- * Generate job description using AI
+ * Generate job description using AI (Gemini)
  */
 export const generateJobDescription = async (
   req: AuthRequest,
@@ -240,7 +240,7 @@ export const generateJobDescription = async (
   try {
     const { title, requirements } = req.body;
     
-    const generatedDescription = await openRouterService.generateJobDescription({
+    const generatedDescription = await geminiService.generateJobDescription({
       title,
       requirements,
     });
