@@ -8,6 +8,7 @@ import { jobService } from '@/services/job.service';
 import { useRouter } from 'next/navigation';
 import { Plus, Briefcase, Users, Eye, Pencil, Trash2, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
+import RichTextEditor from '@/components/RichTextEditor';
 
 interface Job {
   id: string;
@@ -176,7 +177,10 @@ export default function JobsPage() {
                   <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                     <div className="flex-1 w-full">
                       <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
-                      <p className="text-gray-600 mb-4 line-clamp-2 text-sm sm:text-base">{job.description}</p>
+                      <div 
+                        className="text-gray-600 mb-4 line-clamp-2 text-sm sm:text-base prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: job.description }}
+                      />
                       <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500">
                         <span className="flex items-center gap-1">
                           <Briefcase className="w-4 h-4" />
@@ -272,13 +276,10 @@ export default function JobsPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Job Description *
                         </label>
-                        <textarea
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
-                          rows={10}
+                        <RichTextEditor
+                          content={description}
+                          onChange={setDescription}
                           placeholder="Enter job description, requirements, responsibilities..."
-                          required
                         />
                       </div>
                     </div>
