@@ -54,7 +54,14 @@ class GeminiService {
   
   private checkInitialized() {
     if (!this.genAI || !this.model) {
-      throw new Error('Gemini API key not configured. Please set GEMINI_API_KEY in your .env file. Get free API key at: https://aistudio.google.com/');
+      const errorMsg = '🔑 Gemini API key not configured!\n\n' +
+        '📝 Steps to fix:\n' +
+        '1. Get FREE API key: https://aistudio.google.com/\n' +
+        '2. Add to Railway: Variables → GEMINI_API_KEY\n' +
+        '3. Redeploy\n\n' +
+        'Current status: API key is ' + (process.env.GEMINI_API_KEY ? 'SET but invalid' : 'NOT SET');
+      logger.error(errorMsg);
+      throw new Error('Gemini API key not configured. Get your free API key at: https://aistudio.google.com/');
     }
   }
   
