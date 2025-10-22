@@ -37,8 +37,16 @@ class GeminiService {
     try {
       const apiKey = config.gemini?.apiKey || process.env.GEMINI_API_KEY;
       
+      logger.info('Initializing Gemini service', {
+        hasConfigKey: !!config.gemini?.apiKey,
+        hasEnvKey: !!process.env.GEMINI_API_KEY,
+        apiKeyLength: apiKey?.length || 0,
+        apiKeyPrefix: apiKey?.substring(0, 8) || 'none',
+      });
+      
       if (!apiKey || apiKey === '' || apiKey === 'your-gemini-api-key-here') {
-        logger.warn('Gemini API key not configured. AI features will be disabled.');
+        logger.warn('⚠️ Gemini API key not configured. AI features will be disabled.');
+        logger.warn('📝 Get free API key at: https://aistudio.google.com/');
         return;
       }
       
@@ -46,9 +54,12 @@ class GeminiService {
       // Using Gemini 1.5 Flash - Fast and free!
       this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       
-      logger.info('Gemini AI service initialized successfully');
-    } catch (error) {
-      logger.error('Failed to initialize Gemini AI service:', error);
+      logger.info('✅ Gemini AI service initialized successfully with API key');
+    } catch (error: any) {
+      logger.error('❌ Failed to initialize Gemini AI service:', {
+        message: error.message,
+        stack: error.stack,
+      });
     }
   }
   

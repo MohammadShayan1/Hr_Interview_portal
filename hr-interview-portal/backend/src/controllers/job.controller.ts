@@ -240,6 +240,12 @@ export const generateJobDescription = async (
   try {
     const { title, requirements } = req.body;
     
+    logger.info('Job description generation requested', {
+      title,
+      requirementsLength: requirements?.length || 0,
+      hasApiKey: !!process.env.GEMINI_API_KEY,
+    });
+    
     const generatedDescription = await geminiService.generateJobDescription({
       title,
       requirements,
@@ -251,8 +257,18 @@ export const generateJobDescription = async (
         description: generatedDescription,
       },
     });
-  } catch (error) {
-    logger.error('Error generating job description:', error);
-    throw new ApiError(500, 'Failed to generate job description');
+  } catch (error: any) {
+    logger.error('Error generating job description:', {
+      message: error.message,
+      stack: error.stack,
+      hasApiKey: !!process.env.GEMINI_API_KEY,
+    });
+    
+    // Return helpful error message to frontend
+    const errorMessage = error.message.includes('API key') 
+      ? 'AI service not configured. Please contact administrator.' 
+      : 'Failed to generate job description. Please try again.';
+    
+    throw new ApiError(500, errorMessage);
   }
 };
