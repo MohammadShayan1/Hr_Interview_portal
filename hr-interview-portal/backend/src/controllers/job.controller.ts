@@ -54,8 +54,14 @@ export const getJobs = async (req: AuthRequest, res: Response): Promise<void> =>
     const userId = req.user?.uid;
     
     if (!userId) {
+      logger.error('getJobs called without userId', {
+        hasUser: !!req.user,
+        headers: req.headers.authorization?.substring(0, 20),
+      });
       throw new ApiError(401, 'Unauthorized');
     }
+    
+    logger.info('Fetching jobs for user', { userId });
     
     // Fetch jobs and sort in memory to avoid needing composite index
     const jobsSnapshot = await db()
@@ -72,6 +78,12 @@ export const getJobs = async (req: AuthRequest, res: Response): Promise<void> =>
         // Sort by createdAt descending (newest first)
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
+    
+    logger.info('Jobs fetched successfully', { 
+      userId, 
+      count: jobs.length,
+      jobIds: jobs.map(j => j.id),
+    });
     
     res.status(200).json({
       success: true,

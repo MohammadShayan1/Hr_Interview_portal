@@ -37,15 +37,25 @@ try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     
-    // Set persistence to local storage
-    setPersistence(auth, browserLocalPersistence).catch((error) => {
-      console.warn('Firebase persistence setup failed:', error);
-    });
+    // Set persistence to local storage - must be set before any auth operations
+    // This is a synchronous setup for the auth instance
+    if (typeof window !== 'undefined') {
+      setPersistence(auth, browserLocalPersistence).catch((error) => {
+        console.error('Firebase persistence setup failed:', error);
+      });
+    }
     
     console.log('✅ Firebase initialized successfully');
   } else {
     app = getApps()[0];
     auth = getAuth(app);
+    
+    // Ensure persistence is set even if app already exists
+    if (typeof window !== 'undefined') {
+      setPersistence(auth, browserLocalPersistence).catch((error) => {
+        console.error('Firebase persistence setup failed:', error);
+      });
+    }
   }
 } catch (error: any) {
   console.error('❌ Firebase initialization error:', error?.message || error);

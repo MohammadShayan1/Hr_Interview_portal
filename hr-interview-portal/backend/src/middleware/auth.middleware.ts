@@ -21,6 +21,10 @@ export const authenticateUser = async (
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      logger.warn('Missing or invalid authorization header', {
+        path: req.path,
+        hasAuth: !!authHeader,
+      });
       res.status(401).json({
         success: false,
         message: 'Unauthorized: No token provided',
@@ -39,9 +43,19 @@ export const authenticateUser = async (
       email: decodedToken.email,
     };
     
+    logger.debug('User authenticated', {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      path: req.path,
+    });
+    
     next();
-  } catch (error) {
-    logger.error('Authentication error:', error);
+  } catch (error: any) {
+    logger.error('Authentication error:', {
+      error: error.message,
+      code: error.code,
+      path: req.path,
+    });
     res.status(401).json({
       success: false,
       message: 'Unauthorized: Invalid token',

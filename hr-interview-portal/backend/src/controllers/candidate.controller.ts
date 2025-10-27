@@ -40,18 +40,39 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
     const { name, email, phone, experience } = req.body;
     const file = req.file;
     
+    logger.info('Candidate application received', {
+      jobId,
+      name,
+      email,
+      hasFile: !!file,
+      fileName: file?.originalname,
+    });
+    
     if (!file) {
-      throw new ApiError(400, 'Resume file is required');
+      logger.error('Resume file missing in application');
+      throw new ApiError(400, 'Resume file is required. Please upload a PDF, DOC, or DOCX file.');
+    }
+    
+    // Validate required fields
+    if (!name || !email || !phone || !experience) {
+      throw new ApiError(400, 'All fields are required');
     }
     
     // Verify job exists
     const jobDoc = await db().collection('jobs').doc(jobId).get();
     
     if (!jobDoc.exists) {
+      logger.error('Job not found', { jobId });
       throw new ApiError(404, 'Job not found');
     }
     
     const jobData = jobDoc.data();
+    
+    logger.info('Uploading resume to Firebase Storage', {
+      jobId,
+      fileName: file.originalname,
+      size: file.size,
+    });
     
     // Upload resume to Firebase Storage
     const bucket = storage().bucket();
@@ -67,6 +88,8 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
     // Make the file publicly accessible
     await fileUpload.makePublic();
     const resumeUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+    
+    logger.info('Resume uploaded successfully', { resumeUrl });
     
     // Create candidate record
     const candidateData = {
@@ -84,21 +107,28 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
     
     const candidateRef = await db().collection('candidates').add(candidateData);
     
-    logger.info('Candidate application submitted:', { 
+    logger.info('Candidate application submitted successfully', { 
       candidateId: candidateRef.id,
       jobId,
+      email,
     });
     
-    // Trigger n8n workflow
-    await n8nService.triggerCandidateWorkflow({
-      candidateId: candidateRef.id,
-      candidateName: name,
-      candidateEmail: email,
-      candidatePhone: phone,
-      jobId,
-      jobTitle: jobData?.title || 'Unknown Position',
-      resumeUrl,
-    });
+    // Trigger n8n workflow (non-blocking - don't fail if this errors)
+    try {
+      await n8nService.triggerCandidateWorkflow({
+        candidateId: candidateRef.id,
+        candidateName: name,
+        candidateEmail: email,
+        candidatePhone: phone,
+        jobId,
+        jobTitle: jobData?.title || 'Unknown Position',
+        resumeUrl,
+      });
+      logger.info('n8n workflow triggered successfully');
+    } catch (n8nError) {
+      logger.error('n8n workflow failed (non-critical):', n8nError);
+      // Don't throw - application still succeeded
+    }
     
     res.status(201).json({
       success: true,
@@ -107,8 +137,12 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
         candidateId: candidateRef.id,
       },
     });
-  } catch (error) {
-    logger.error('Error submitting application:', error);
+  } catch (error: any) {
+    logger.error('Error submitting application:', {
+      message: error.message,
+      stack: error.stack,
+      jobId: req.params.jobId,
+    });
     throw error;
   }
 };
