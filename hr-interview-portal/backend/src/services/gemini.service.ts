@@ -51,10 +51,14 @@ class GeminiService {
       }
       
       this.genAI = new GoogleGenerativeAI(apiKey);
-      // Using Gemini Pro - Stable and free!
-      this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+      // Using Gemini Pro (most stable model)
+      this.model = this.genAI.getGenerativeModel({ 
+        model: 'models/gemini-pro'
+      });
       
-      logger.info('✅ Gemini AI service initialized successfully with API key');
+      logger.info('✅ Gemini AI service initialized successfully', {
+        model: 'models/gemini-pro'
+      });
     } catch (error: any) {
       logger.error('❌ Failed to initialize Gemini AI service:', {
         message: error.message,
