@@ -267,6 +267,8 @@ export const generateJobDescription = async (
     logger.error('Error generating job description:', {
       message: error.message,
       stack: error.stack,
+      name: error.name,
+      errorDetails: error,
       hasApiKey: !!process.env.GEMINI_API_KEY,
     });
     
@@ -283,6 +285,14 @@ export const generateJobDescription = async (
       success: false,
       message: errorMessage,
       details: error.message,
+      errorName: error.name,
+      errorStack: error.stack,
+      // Include full error for debugging (remove in production)
+      debugInfo: {
+        ...error,
+        hasApiKey: !!process.env.GEMINI_API_KEY,
+        apiKeyPrefix: process.env.GEMINI_API_KEY?.substring(0, 10),
+      },
     });
   }
 };
