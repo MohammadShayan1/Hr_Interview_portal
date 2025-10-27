@@ -4,7 +4,6 @@ import { getDb } from '../config/firebase';
 import geminiService from '../services/gemini.service';
 import logger from '../config/logger';
 import { ApiError } from '../middleware/error.middleware';
-import { config } from '../config';
 
 // Helper to get db instance
 const db = () => getDb();
@@ -292,7 +291,7 @@ export const generateJobDescription = async (
  * Test endpoint to check Gemini configuration
  */
 export const testGeminiConfig = async (
-  req: AuthRequest,
+  _req: AuthRequest,
   res: Response
 ): Promise<void> => {
   try {
