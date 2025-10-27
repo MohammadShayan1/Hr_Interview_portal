@@ -18,17 +18,24 @@ import toast from 'react-hot-toast';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
+    if (isSigningOut) return; // Prevent double-clicks
+    
+    setIsSigningOut(true);
     try {
       await signOut();
       toast.success('Signed out successfully');
       router.push('/login');
-    } catch (error) {
-      toast.error('Failed to sign out');
+    } catch (error: any) {
+      console.error('Sign out error:', error);
+      toast.error(error?.message || 'Failed to sign out');
+    } finally {
+      setIsSigningOut(false);
     }
   };
 
@@ -106,10 +113,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="p-4 border-t">
             <button
               onClick={handleSignOut}
-              className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+              disabled={isSigningOut}
+              className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <LogOut className="w-5 h-5 mr-3" />
-              Sign Out
+              {isSigningOut ? 'Signing out...' : 'Sign Out'}
             </button>
           </div>
         </div>

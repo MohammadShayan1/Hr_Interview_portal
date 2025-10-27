@@ -1,11 +1,12 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
+  signOut as firebaseSignOut,
   sendPasswordResetEmail,
   User,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { clearTokenCache } from '@/lib/api';
 
 interface AuthError {
   code: string;
@@ -28,6 +29,7 @@ const parseFirebaseError = (error: any): AuthError => {
       'auth/user-disabled': 'This account has been disabled.',
       'auth/too-many-requests': 'Too many login attempts. Try again later.',
       'auth/network-request-failed': 'Network error. Check your connection.',
+      'auth/invalid-credential': 'Invalid email or password.',
     };
     
     return {
@@ -68,7 +70,17 @@ export const authService = {
   // Sign out
   async signOut(): Promise<void> {
     try {
-      await signOut(auth);
+      // Clear token cache first
+      clearTokenCache();
+      
+      // Sign out from Firebase
+      await firebaseSignOut(auth);
+      
+      // Clear any local storage or session storage if needed
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user');
+        sessionStorage.clear();
+      }
     } catch (error) {
       const parsedError = parseFirebaseError(error);
       throw new Error(parsedError.message);
