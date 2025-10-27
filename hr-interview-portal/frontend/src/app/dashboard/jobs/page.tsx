@@ -263,7 +263,7 @@ export default function JobsPage() {
           {/* Create/Edit Job Modal */}
           {showCreateModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full my-8">
+              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full my-8 max-h-[90vh] overflow-y-auto">
                 <div className="p-4 sm:p-6">
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                     {selectedJob ? 'Edit Job' : 'Create New Job'}
@@ -326,7 +326,7 @@ export default function JobsPage() {
           {/* AI Generation Modal */}
           {showAIModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full my-8">
+              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full my-8 max-h-[90vh] overflow-y-auto">
                 <div className="p-4 sm:p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />

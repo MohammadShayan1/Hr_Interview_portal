@@ -51,11 +51,11 @@ class GeminiService {
       }
       
       this.genAI = new GoogleGenerativeAI(apiKey);
-      // Using the simplest model name that works
-      this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+      // Using gemini-2.5-flash - the newest working model
+      this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       
       logger.info('✅ Gemini AI service initialized successfully', {
-        model: 'gemini-pro',
+        model: 'gemini-2.5-flash',
         apiKeySet: true,
       });
     } catch (error: any) {
@@ -157,7 +157,7 @@ Make it compelling and professional. Return ONLY the HTML content without markdo
       
       logger.info('Job description generated successfully', { 
         length: cleanedText.length,
-        model: 'gemini-pro'
+        model: 'gemini-2.5-flash'
       });
       
       return cleanedText;
@@ -233,7 +233,7 @@ Provide a JSON response with the following structure (respond with ONLY valid JS
       
       logger.info('Interview evaluation completed successfully', {
         score: evaluation.score,
-        model: 'gemini-pro'
+        model: 'gemini-2.5-flash'
       });
       
       return evaluation;
