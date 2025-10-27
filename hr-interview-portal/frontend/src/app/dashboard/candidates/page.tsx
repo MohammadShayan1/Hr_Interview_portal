@@ -40,6 +40,12 @@ function CandidatesContent() {
   const [emailModal, setEmailModal] = useState<{ isOpen: boolean; candidate: Candidate | null }>({ isOpen: false, candidate: null });
   const [emailForm, setEmailForm] = useState({ subject: '', message: '' });
   const [emailLoading, setEmailLoading] = useState(false);
+  
+  // Interview scheduling modal
+  const [interviewModal, setInterviewModal] = useState<{ isOpen: boolean; candidate: Candidate | null }>({ isOpen: false, candidate: null });
+  const [interviewType, setInterviewType] = useState<'ai' | 'manual' | null>(null);
+  const [interviewForm, setInterviewForm] = useState({ date: '', time: '', calendlyLink: '' });
+  const [interviewLoading, setInterviewLoading] = useState(false);
 
   useEffect(() => {
     fetchJobs();
@@ -116,6 +122,58 @@ function CandidatesContent() {
       console.error('Error sending email:', error);
     } finally {
       setEmailLoading(false);
+    }
+  };
+
+  const handleScheduleInterview = async () => {
+    if (!interviewType) {
+      toast.error('Please select an interview type');
+      return;
+    }
+
+    if (interviewType === 'ai') {
+      if (!interviewForm.date || !interviewForm.time) {
+        toast.error('Please select date and time for the interview');
+        return;
+      }
+    } else if (interviewType === 'manual') {
+      if (!interviewForm.calendlyLink.trim()) {
+        toast.error('Please enter your Calendly link');
+        return;
+      }
+    }
+
+    try {
+      setInterviewLoading(true);
+      
+      if (interviewType === 'ai') {
+        await candidateService.scheduleAIInterview(
+          interviewModal.candidate!.id,
+          interviewForm.date,
+          interviewForm.time
+        );
+        toast.success('AI Interview scheduled! Candidate will receive an email with the interview link.');
+      } else {
+        await candidateService.scheduleManualInterview(
+          interviewModal.candidate!.id,
+          interviewForm.calendlyLink
+        );
+        toast.success('Manual interview scheduled! Candidate will receive an email with the Calendly link.');
+      }
+      
+      setInterviewModal({ isOpen: false, candidate: null });
+      setInterviewType(null);
+      setInterviewForm({ date: '', time: '', calendlyLink: '' });
+      
+      // Refresh candidates
+      if (selectedJobId) {
+        fetchCandidatesByJob(selectedJobId);
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to schedule interview');
+      console.error('Error scheduling interview:', error);
+    } finally {
+      setInterviewLoading(false);
     }
   };
 
@@ -220,6 +278,16 @@ function CandidatesContent() {
                             <span className="sm:hidden">Resume</span>
                             <ExternalLink className="w-3 h-3" />
                           </a>
+                        )}
+                        {!candidate.interviewLink && candidate.status === 'Applied' && (
+                          <button
+                            onClick={() => setInterviewModal({ isOpen: true, candidate })}
+                            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs sm:text-sm"
+                          >
+                            <Calendar className="w-4 h-4" />
+                            <span className="hidden sm:inline">Schedule Interview</span>
+                            <span className="sm:hidden">Schedule</span>
+                          </button>
                         )}
                         <button
                           onClick={() => setEmailModal({ isOpen: true, candidate })}
@@ -397,6 +465,165 @@ function CandidatesContent() {
                         setEmailForm({ subject: '', message: '' });
                       }}
                       disabled={emailLoading}
+                      className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Schedule Interview Modal */}
+          {interviewModal.isOpen && interviewModal.candidate && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-gray-900">Schedule Interview for {interviewModal.candidate.name}</h2>
+                    <button
+                      onClick={() => {
+                        setInterviewModal({ isOpen: false, candidate: null });
+                        setInterviewType(null);
+                        setInterviewForm({ date: '', time: '', calendlyLink: '' });
+                      }}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  {/* Interview Type Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Select Interview Type *
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <button
+                        onClick={() => setInterviewType('ai')}
+                        className={`p-4 border-2 rounded-lg transition-all ${
+                          interviewType === 'ai'
+                            ? 'border-blue-600 bg-blue-50'
+                            : 'border-gray-300 hover:border-blue-400'
+                        }`}
+                        disabled={interviewLoading}
+                      >
+                        <div className="text-center">
+                          <div className="text-2xl mb-2">🤖</div>
+                          <div className="font-semibold text-gray-900">AI Interview</div>
+                          <div className="text-sm text-gray-600 mt-1">
+                            Automated AI-powered interview
+                          </div>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => setInterviewType('manual')}
+                        className={`p-4 border-2 rounded-lg transition-all ${
+                          interviewType === 'manual'
+                            ? 'border-green-600 bg-green-50'
+                            : 'border-gray-300 hover:border-green-400'
+                        }`}
+                        disabled={interviewLoading}
+                      >
+                        <div className="text-center">
+                          <div className="text-2xl mb-2">📅</div>
+                          <div className="font-semibold text-gray-900">Manual Interview</div>
+                          <div className="text-sm text-gray-600 mt-1">
+                            Schedule with Calendly
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* AI Interview Form */}
+                  {interviewType === 'ai' && (
+                    <div className="space-y-4 animate-fadeIn">
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <p className="text-sm text-blue-800">
+                          📧 The candidate will receive an email with the interview link and scheduled time.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Interview Date *
+                        </label>
+                        <input
+                          type="date"
+                          value={interviewForm.date}
+                          onChange={(e) => setInterviewForm({ ...interviewForm, date: e.target.value })}
+                          min={new Date().toISOString().split('T')[0]}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          disabled={interviewLoading}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Interview Time *
+                        </label>
+                        <input
+                          type="time"
+                          value={interviewForm.time}
+                          onChange={(e) => setInterviewForm({ ...interviewForm, time: e.target.value })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          disabled={interviewLoading}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Manual Interview Form */}
+                  {interviewType === 'manual' && (
+                    <div className="space-y-4 animate-fadeIn">
+                      <div className="bg-green-50 p-4 rounded-lg">
+                        <p className="text-sm text-green-800">
+                          📧 The candidate will receive an email with your Calendly scheduling link.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Your Calendly Link *
+                        </label>
+                        <input
+                          type="url"
+                          value={interviewForm.calendlyLink}
+                          onChange={(e) => setInterviewForm({ ...interviewForm, calendlyLink: e.target.value })}
+                          placeholder="https://calendly.com/your-username/30min"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                          disabled={interviewLoading}
+                        />
+                        <p className="mt-1 text-xs text-gray-500">
+                          Enter your Calendly event scheduling link
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={handleScheduleInterview}
+                      disabled={interviewLoading || !interviewType}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                      {interviewLoading ? 'Scheduling...' : 'Schedule Interview'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setInterviewModal({ isOpen: false, candidate: null });
+                        setInterviewType(null);
+                        setInterviewForm({ date: '', time: '', calendlyLink: '' });
+                      }}
+                      disabled={interviewLoading}
                       className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                       Cancel

@@ -45,4 +45,29 @@ export const candidateService = {
     );
     return response.data;
   },
+
+  // Schedule AI interview
+  async scheduleAIInterview(
+    candidateId: string,
+    interviewDate: string,
+    interviewTime: string
+  ): Promise<{ success: boolean; interviewLink: string; message: string }> {
+    const response = await apiClient.post(
+      `/candidates/${candidateId}/schedule-ai-interview`,
+      { interviewDate, interviewTime }
+    );
+    return response.data;
+  },
+
+  // Schedule manual interview (Calendly)
+  async scheduleManualInterview(
+    candidateId: string,
+    calendlyLink: string
+  ): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.post(
+      `/candidates/${candidateId}/schedule-manual-interview`,
+      { calendlyLink }
+    );
+    return response.data;
+  },
 };

@@ -243,6 +243,177 @@ export const getCandidateById = async (
 };
 
 /**
+ * Schedule AI interview for candidate
+ */
+export const scheduleAIInterview = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { interviewDate, interviewTime } = req.body;
+    const userId = req.user?.uid;
+
+    if (!userId) {
+      throw new ApiError(401, 'Unauthorized');
+    }
+
+    logger.info('Scheduling AI interview', { candidateId: id, userId, interviewDate, interviewTime });
+
+    // Validate inputs
+    if (!interviewDate || !interviewTime) {
+      throw new ApiError(400, 'Interview date and time are required');
+    }
+
+    // Get candidate
+    const candidateDoc = await db().collection('candidates').doc(id).get();
+    if (!candidateDoc.exists) {
+      throw new ApiError(404, 'Candidate not found');
+    }
+
+    const candidateData = candidateDoc.data();
+    
+    // Get job to verify ownership
+    const jobDoc = await db().collection('jobs').doc(candidateData?.jobId).get();
+    if (!jobDoc.exists || jobDoc.data()?.createdBy !== userId) {
+      throw new ApiError(403, 'Unauthorized access to candidate');
+    }
+
+    // Generate AI interview link (placeholder - integrate with your AI interview service)
+    const aiInterviewLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/ai-interview/${id}`;
+    
+    // Format date and time for email
+    const formattedDateTime = new Date(`${interviewDate}T${interviewTime}`).toLocaleString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short'
+    });
+
+    // Update candidate status
+    await db().collection('candidates').doc(id).update({
+      status: 'Interview Scheduled',
+      interviewLink: aiInterviewLink,
+      interviewType: 'ai',
+      interviewDate,
+      interviewTime,
+      updatedAt: new Date().toISOString(),
+    });
+
+    // Send email via n8n (non-blocking)
+    try {
+      await n8nService.triggerCandidateWorkflow({
+        candidateId: id,
+        candidateEmail: candidateData?.email,
+        candidateName: candidateData?.name,
+        candidatePhone: candidateData?.phone,
+        jobId: candidateData?.jobId,
+        jobTitle: candidateData?.jobTitle,
+        resumeUrl: candidateData?.resumeUrl,
+      });
+      logger.info('Interview scheduling email sent successfully');
+    } catch (n8nError) {
+      logger.error('Failed to send interview email via n8n (non-critical):', n8nError);
+      // Don't throw - scheduling still succeeded
+    }
+
+    logger.info('AI interview scheduled successfully', { candidateId: id });
+
+    res.status(200).json({
+      success: true,
+      message: 'AI interview scheduled successfully',
+      data: {
+        interviewLink: aiInterviewLink,
+        scheduledTime: formattedDateTime,
+      },
+    });
+  } catch (error) {
+    logger.error('Error scheduling AI interview:', error);
+    throw error;
+  }
+};
+
+/**
+ * Schedule manual interview (Calendly) for candidate
+ */
+export const scheduleManualInterview = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { calendlyLink } = req.body;
+    const userId = req.user?.uid;
+
+    if (!userId) {
+      throw new ApiError(401, 'Unauthorized');
+    }
+
+    logger.info('Scheduling manual interview', { candidateId: id, userId, calendlyLink });
+
+    // Validate inputs
+    if (!calendlyLink) {
+      throw new ApiError(400, 'Calendly link is required');
+    }
+
+    // Validate Calendly URL format
+    const calendlyRegex = /^https:\/\/(calendly\.com|www\.calendly\.com)\/.+/;
+    if (!calendlyRegex.test(calendlyLink)) {
+      throw new ApiError(400, 'Invalid Calendly link format');
+    }
+
+    // Get candidate
+    const candidateDoc = await db().collection('candidates').doc(id).get();
+    if (!candidateDoc.exists) {
+      throw new ApiError(404, 'Candidate not found');
+    }
+
+    const candidateData = candidateDoc.data();
+    
+    // Get job to verify ownership
+    const jobDoc = await db().collection('jobs').doc(candidateData?.jobId).get();
+    if (!jobDoc.exists || jobDoc.data()?.createdBy !== userId) {
+      throw new ApiError(403, 'Unauthorized access to candidate');
+    }
+
+    // Update candidate status
+    await db().collection('candidates').doc(id).update({
+      status: 'Interview Scheduled',
+      interviewLink: calendlyLink,
+      interviewType: 'manual',
+      updatedAt: new Date().toISOString(),
+    });
+
+    // Send email via n8n (non-blocking)
+    try {
+      await n8nService.triggerCandidateWorkflow({
+        candidateId: id,
+        candidateEmail: candidateData?.email,
+        candidateName: candidateData?.name,
+        candidatePhone: candidateData?.phone,
+        jobId: candidateData?.jobId,
+        jobTitle: candidateData?.jobTitle,
+        resumeUrl: candidateData?.resumeUrl,
+      });
+      logger.info('Interview scheduling email sent successfully');
+    } catch (n8nError) {
+      logger.error('Failed to send interview email via n8n (non-critical):', n8nError);
+      // Don't throw - scheduling still succeeded
+    }
+
+    logger.info('Manual interview scheduled successfully', { candidateId: id });
+
+    res.status(200).json({
+      success: true,
+      message: 'Interview scheduling link sent successfully',
+      data: {
+        calendlyLink,
+      },
+    });
+  } catch (error) {
+    logger.error('Error scheduling manual interview:', error);
+    throw error;
+  }
+};
+
+/**
  * Get dashboard statistics
  */
 export const getDashboardStats = async (
