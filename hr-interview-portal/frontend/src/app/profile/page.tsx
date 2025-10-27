@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
+import { auth } from '@/lib/firebase';
 import DashboardLayout from '@/components/DashboardLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { User, Mail, Phone, Building2, Briefcase, FileText } from 'lucide-react';
@@ -39,7 +40,14 @@ function ProfileContent() {
   const fetchProfile = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-      const token = await (window as any).auth.currentUser?.getIdToken();
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        toast.error('Please login to view your profile');
+        router.push('/login');
+        return;
+      }
+      
       const response = await fetch(`${apiUrl}/users/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -81,7 +89,13 @@ function ProfileContent() {
     try {
       setIsSaving(true);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-      const token = await (window as any).auth.currentUser?.getIdToken();
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        toast.error('Please login to update your profile');
+        return;
+      }
+      
       const response = await fetch(`${apiUrl}/users/profile`, {
         method: 'PUT',
         headers: {
@@ -114,7 +128,13 @@ function ProfileContent() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-      const token = await (window as any).auth.currentUser?.getIdToken();
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        toast.error('Please login to delete your account');
+        return;
+      }
+      
       const response = await fetch(`${apiUrl}/users/account`, {
         method: 'DELETE',
         headers: {
@@ -128,7 +148,7 @@ function ProfileContent() {
 
       toast.success('Account deleted');
       // Sign out and redirect
-      (window as any).auth.signOut();
+      await auth.signOut();
       router.push('/');
     } catch (error) {
       toast.error('Failed to delete account');
