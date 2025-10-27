@@ -45,7 +45,7 @@ class N8nService {
           headers: {
             'Content-Type': 'application/json',
           },
-          timeout: 10000, // 10 seconds timeout
+          timeout: 5000, // 5 seconds timeout - fail fast if n8n is slow
         }
       );
       

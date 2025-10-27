@@ -35,6 +35,7 @@ export const uploadResume = upload.single('resume');
  * Submit candidate application
  */
 export const applyForJob = async (req: Request, res: Response): Promise<void> => {
+  const startTime = Date.now();
   try {
     const { jobId } = req.params;
     const { name, email, phone, experience } = req.body;
@@ -59,7 +60,9 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
     }
     
     // Verify job exists
+    const jobFetchStart = Date.now();
     const jobDoc = await db().collection('jobs').doc(jobId).get();
+    logger.info(`Job fetch took ${Date.now() - jobFetchStart}ms`);
     
     if (!jobDoc.exists) {
       logger.error('Job not found', { jobId });
@@ -75,6 +78,7 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
     });
     
     // Upload resume to Firebase Storage
+    const uploadStart = Date.now();
     const bucket = storage().bucket();
     const fileName = `resumes/${jobId}/${Date.now()}_${file.originalname}`;
     const fileUpload = bucket.file(fileName);
@@ -85,13 +89,18 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
       },
     });
     
+    logger.info(`File upload took ${Date.now() - uploadStart}ms`);
+    
     // Make the file publicly accessible
+    const publicStart = Date.now();
     await fileUpload.makePublic();
     const resumeUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+    logger.info(`Making file public took ${Date.now() - publicStart}ms`);
     
     logger.info('Resume uploaded successfully', { resumeUrl });
     
     // Create candidate record with all necessary fields
+    const dbSaveStart = Date.now();
     const candidateData = {
       jobId,
       userId: jobData?.createdBy || null, // Job owner's user ID for filtering
@@ -108,30 +117,16 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
     };
     
     const candidateRef = await db().collection('candidates').add(candidateData);
+    logger.info(`Database save took ${Date.now() - dbSaveStart}ms`);
     
     logger.info('Candidate application submitted successfully', { 
       candidateId: candidateRef.id,
       jobId,
       email,
+      totalTime: `${Date.now() - startTime}ms`,
     });
     
-    // Trigger n8n workflow (non-blocking - don't fail if this errors)
-    try {
-      await n8nService.triggerCandidateWorkflow({
-        candidateId: candidateRef.id,
-        candidateName: name,
-        candidateEmail: email,
-        candidatePhone: phone,
-        jobId,
-        jobTitle: jobData?.title || 'Unknown Position',
-        resumeUrl,
-      });
-      logger.info('n8n workflow triggered successfully');
-    } catch (n8nError) {
-      logger.error('n8n workflow failed (non-critical):', n8nError);
-      // Don't throw - application still succeeded
-    }
-    
+    // Send response immediately - don't wait for n8n workflow
     res.status(201).json({
       success: true,
       message: 'Application submitted successfully',
@@ -139,11 +134,30 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
         candidateId: candidateRef.id,
       },
     });
+    
+    // Trigger n8n workflow asynchronously (fire and forget - non-blocking)
+    n8nService.triggerCandidateWorkflow({
+      candidateId: candidateRef.id,
+      candidateName: name,
+      candidateEmail: email,
+      candidatePhone: phone,
+      jobId,
+      jobTitle: jobData?.title || 'Unknown Position',
+      resumeUrl,
+    })
+      .then(() => {
+        logger.info('n8n workflow triggered successfully');
+      })
+      .catch((n8nError) => {
+        logger.error('n8n workflow failed (non-critical):', n8nError);
+        // Don't throw - application already succeeded
+      });
   } catch (error: any) {
     logger.error('Error submitting application:', {
       message: error.message,
       stack: error.stack,
       jobId: req.params.jobId,
+      totalTime: `${Date.now() - startTime}ms`,
     });
     throw error;
   }
