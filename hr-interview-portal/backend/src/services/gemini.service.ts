@@ -106,9 +106,16 @@ Make it compelling and professional. Return ONLY the HTML content without markdo
       logger.info('Calling Gemini API for job description generation', {
         title: data.title,
         requirementsLength: data.requirements.length,
+        modelExists: !!this.model,
       });
       
       const result = await this.model.generateContent(prompt);
+      
+      logger.info('Gemini API call completed', {
+        hasResult: !!result,
+        hasResponse: !!result?.response,
+      });
+      
       const response = await result.response;
       const generatedText = response.text();
       
@@ -134,8 +141,22 @@ Make it compelling and professional. Return ONLY the HTML content without markdo
     } catch (error: any) {
       logger.error('Error generating job description with Gemini:', {
         message: error.message,
+        name: error.name,
         stack: error.stack,
+        status: error.status,
+        statusText: error.statusText,
+        response: error.response?.data,
       });
+      
+      // Provide more specific error messages
+      if (error.message?.includes('API key')) {
+        throw new Error('Gemini API key is invalid or expired. Please check your configuration.');
+      } else if (error.status === 429 || error.message?.includes('quota')) {
+        throw new Error('Gemini API rate limit exceeded. Please try again in a few minutes.');
+      } else if (error.status === 403) {
+        throw new Error('Gemini API access denied. Please verify your API key permissions.');
+      }
+      
       throw new Error('Failed to generate job description: ' + error.message);
     }
   }
