@@ -91,9 +91,11 @@ export const applyForJob = async (req: Request, res: Response): Promise<void> =>
     
     logger.info('Resume uploaded successfully', { resumeUrl });
     
-    // Create candidate record
+    // Create candidate record with all necessary fields
     const candidateData = {
       jobId,
+      userId: jobData?.createdBy || null, // Job owner's user ID for filtering
+      jobTitle: jobData?.title || 'Unknown Position', // Store job title for emails
       name,
       email,
       phone,
