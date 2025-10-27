@@ -4,16 +4,16 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files from backend directory
+COPY backend/package*.json ./
 
 # Install all dependencies (including dev dependencies for build)
 RUN npm ci
 
-# Copy TypeScript config and source code
-COPY tsconfig.json ./
-COPY tsconfig.build.json ./
-COPY src ./src
+# Copy TypeScript config and source code from backend directory
+COPY backend/tsconfig.json ./
+COPY backend/tsconfig.build.json ./
+COPY backend/src ./src
 
 # Build the TypeScript code
 RUN npm run build
