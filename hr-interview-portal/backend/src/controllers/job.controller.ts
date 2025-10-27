@@ -4,6 +4,7 @@ import { getDb } from '../config/firebase';
 import geminiService from '../services/gemini.service';
 import logger from '../config/logger';
 import { ApiError } from '../middleware/error.middleware';
+import { config } from '../config';
 
 // Helper to get db instance
 const db = () => getDb();
@@ -283,6 +284,44 @@ export const generateJobDescription = async (
       success: false,
       message: errorMessage,
       details: error.message,
+    });
+  }
+};
+
+/**
+ * Test endpoint to check Gemini configuration
+ */
+export const testGeminiConfig = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const hasApiKey = !!process.env.GEMINI_API_KEY;
+    const apiKeyLength = process.env.GEMINI_API_KEY?.length || 0;
+    const apiKeyPrefix = process.env.GEMINI_API_KEY?.substring(0, 10) || 'none';
+    
+    logger.info('Gemini configuration test', {
+      hasApiKey,
+      apiKeyLength,
+      apiKeyPrefix,
+    });
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        configured: hasApiKey,
+        apiKeyLength,
+        apiKeyPrefix,
+        message: hasApiKey 
+          ? 'Gemini API key is configured' 
+          : 'Gemini API key is NOT configured - Please add GEMINI_API_KEY to Railway variables',
+      },
+    });
+  } catch (error: any) {
+    logger.error('Error checking Gemini config:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

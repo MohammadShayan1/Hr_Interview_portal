@@ -8,6 +8,7 @@ import {
   deleteJob,
   generateJobDescription,
   getPublicJob,
+  testGeminiConfig,
 } from '../controllers/job.controller';
 import { authenticateUser } from '../middleware/auth.middleware';
 import { handleValidationErrors } from '../middleware/validation.middleware';
@@ -50,6 +51,9 @@ router.post(
   handleValidationErrors,
   generateJobDescription
 );
+
+// Test endpoint for Gemini configuration (no auth required for testing)
+router.get('/ai/test-config', testGeminiConfig);
 
 // GET routes - specific paths first
 router.get('/', authenticateUser, getJobs);
