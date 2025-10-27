@@ -51,13 +51,12 @@ class GeminiService {
       }
       
       this.genAI = new GoogleGenerativeAI(apiKey);
-      // Using Gemini Pro (most stable model)
-      this.model = this.genAI.getGenerativeModel({ 
-        model: 'models/gemini-pro'
-      });
+      // Using the simplest model name that works
+      this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
       
       logger.info('✅ Gemini AI service initialized successfully', {
-        model: 'models/gemini-pro'
+        model: 'gemini-pro',
+        apiKeySet: true,
       });
     } catch (error: any) {
       logger.error('❌ Failed to initialize Gemini AI service:', {
@@ -113,14 +112,34 @@ Make it compelling and professional. Return ONLY the HTML content without markdo
         modelExists: !!this.model,
       });
       
-      const result = await this.model.generateContent(prompt);
+      // Call Gemini API
+      let result;
+      try {
+        result = await this.model.generateContent(prompt);
+        logger.info('Gemini generateContent call succeeded');
+      } catch (apiError: any) {
+        logger.error('Gemini API call failed', {
+          message: apiError.message,
+          name: apiError.name,
+          cause: apiError.cause,
+          stack: apiError.stack,
+        });
+        throw apiError;
+      }
       
-      logger.info('Gemini API call completed', {
-        hasResult: !!result,
-        hasResponse: !!result?.response,
-      });
+      // Get response
+      let response;
+      try {
+        response = await result.response;
+        logger.info('Got response from Gemini');
+      } catch (responseError: any) {
+        logger.error('Failed to get response', {
+          message: responseError.message,
+        });
+        throw responseError;
+      }
       
-      const response = await result.response;
+      // Extract text
       const generatedText = response.text();
       
       if (!generatedText) {
@@ -149,7 +168,7 @@ Make it compelling and professional. Return ONLY the HTML content without markdo
         stack: error.stack,
         status: error.status,
         statusText: error.statusText,
-        response: error.response?.data,
+        errorDetails: error.errorDetails,
       });
       
       // Provide more specific error messages
@@ -159,6 +178,8 @@ Make it compelling and professional. Return ONLY the HTML content without markdo
         throw new Error('Gemini API rate limit exceeded. Please try again in a few minutes.');
       } else if (error.status === 403) {
         throw new Error('Gemini API access denied. Please verify your API key permissions.');
+      } else if (error.status === 404) {
+        throw new Error('Gemini model not found. The API key may not have access to this model.');
       }
       
       throw new Error('Failed to generate job description: ' + error.message);
